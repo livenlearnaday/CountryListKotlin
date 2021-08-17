@@ -1,0 +1,187 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
+}
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    defaultConfig {
+        applicationId "io.github.livenlearnaday.countrylistkotlin"
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        vectorDrawables.useSupportLibrary = true
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        viewBinding true
+
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    configurations.all {
+        resolutionStrategy {
+            exclude group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-debug"
+
+        }
+    }
+    defaultConfig {
+        testInstrumentationRunnerArguments clearPackageData: 'true'
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
+
+    dexOptions {
+        preDexLibraries true
+        javaMaxHeapSize "2g" // Use gig increments depending on needs
+    }
+}
+
+dependencies {
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+
+    implementation "androidx.core:core-ktx:$androidxCoreKtxVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation "androidx.annotation:annotation:$annotationVersion"
+
+
+//lifecycle
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleViewmodel"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleLivedata"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycleCommon"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleRuntime"
+
+
+    implementation "androidx.appcompat:appcompat:$appcompatVersion"
+    implementation "androidx.constraintlayout:constraintlayout:$constraintlayoutVersion"
+    implementation "com.google.android.material:material:$androidMaterialVersion"
+    implementation "androidx.activity:activity-ktx:$activityKtxVersion"
+
+
+    //Navigation
+    implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
+    implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
+
+
+    // Needed to fix a dependency conflict with FirebaseUI'
+    implementation 'androidx.arch.core:core-runtime:2.1.0'
+
+
+    //Timber logging
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
+    // database
+    implementation "androidx.room:room-rxjava2:$roomDatabase"
+    implementation "androidx.room:room-runtime:$roomDatabase"
+    implementation "androidx.room:room-ktx:$roomDatabase"
+    kapt "androidx.room:room-compiler:$roomDatabase"
+
+
+    //testing
+
+    //JUnit UI Testing
+    androidTestImplementation "androidx.test.ext:junit-ktx:$androidXJunitVersion"
+    androidTestImplementation "org.assertj:assertj-core:$assertjVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidXJunitVersion"
+
+    //JUnit
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+
+    //mockk
+    testImplementation "io.mockk:mockk:$mockVersion"
+
+
+    //Expresso
+    implementation "androidx.test.espresso:espresso-idling-resource:$espressoVersion"
+    implementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoIntentsVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+
+
+    // coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesAndroidVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutinesVersion"
+
+    //coroutines testing
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesTestVersion"
+    implementation "androidx.arch.core:core-testing:$coreTestingVersion"
+
+// retrofit
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.okhttp3:okhttp:$okhttpVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$gsonRetrofitVersion"
+    implementation "com.google.code.gson:gson:$gsonGoogleVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttpInterceptorVersion"
+
+    //Glide
+    implementation("com.github.bumptech.glide:glide:${glideVersion}") {
+        exclude group: "com.android.support"
+    }
+    kapt "com.github.bumptech.glide:compiler:${glideVersion}"
+    //svg image handling
+    implementation 'com.github.corouteam:GlideToVectorYou:v2.0.0'
+
+
+    // Hilt
+    implementation "com.google.dagger:hilt-android:$hiltAndroidVersion"
+    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hiltViewModelVersion"
+    kapt "com.google.dagger:hilt-android-compiler:$hiltAndroidCompilerVersion"
+    kapt "androidx.hilt:hilt-compiler:$hiltCompilerVersion"
+
+
+
+    //Hilt Testing
+    // For Robolectric tests
+    testImplementation "com.google.dagger:hilt-android-testing:$hiltAndroidVersion"
+    // hilt testing
+    kaptTest "com.google.dagger:hilt-android-compiler:$hiltAndroidVersion"
+    // For instrumented tests
+    androidTestImplementation "com.google.dagger:hilt-android-testing:$hiltAndroidVersion"
+    // hilt testing
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hiltAndroidVersion"
+
+
+
+    //preference datastore
+    implementation "androidx.datastore:datastore-preferences-core:$datastorePreferencesVersion"
+    implementation "androidx.datastore:datastore-preferences:$datastorePreferencesVersion"
+
+
+}
+
+kapt {
+    correctErrorTypes true
+}

@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">CountryListKotlin</string>
+    <string name="title_activity_maps">Map</string>
+
+    <string name="country">Country:</string>
+    <string name="flag">flag image</string>
+
+    <string name="country_name">Country name</string>
+
+    <string name="refresh_menu_title">Fetch Data</string>
+    <string name="search_menu_title">Search Country</string>
+    <string name="cancel_menu_title">Cancel Show All</string>
+    <string name="country_search_hint">type country name</string>
+    <string name="show_fav_menu_title">Show Favs</string>
+    <string name="clear_all_fav_menu_title">Clear All Favs</string>
+
+
+    <string name="dialog_reload_countries_title">Reload data?</string>
+    <string name="dialog_reload_countries_message">All data (e.g. favorites) will be reset. Do you really want to reload data from the internet and reset current data?</string>
+
+    <string name="dialog_reset_fav_countries_title">Reset favorites?</string>
+    <string name="dialog_reset_fav_countries_message">All favorites will be reset. Do you really want to reset?</string>
+
+
+
+
+
+
+
+</resources>

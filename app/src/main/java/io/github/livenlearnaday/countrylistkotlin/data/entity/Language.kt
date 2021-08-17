@@ -1,0 +1,26 @@
+package io.github.livenlearnaday.countrylistkotlin.data.entity
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
+import com.google.gson.annotations.Expose
+import java.io.Serializable
+
+
+data class Language(
+//    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    var name: String? = "",
+    var nativeName: String? = "",
+) : Serializable {
+
+    @SerializedName("iso639_1")
+    @Expose
+    var iso6391: String? = ""
+
+    @SerializedName("iso639_2")
+    @Expose
+    var iso6392: String? = ""
+
+
+}

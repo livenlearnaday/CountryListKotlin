@@ -1,0 +1,2 @@
+rootProject.name = "CountryListKotlin"
+include ':app'

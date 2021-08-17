@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.countries.CountryDetailFragment">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/country_cl"
+        android:layout_marginBottom="@dimen/dimen_50dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/country_detail_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+<CheckBox
+    android:id="@+id/fav_checkbox"
+    android:button="@drawable/checkbox_background"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/dimen_30dp"
+    android:layout_marginRight="@dimen/dimen_30dp"
+    android:layout_marginEnd="@dimen/dimen_30dp"
+    app:layout_constraintBottom_toTopOf="@+id/flag_image"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/flag_image"
+                android:layout_width="@dimen/dimen_200dp"
+                android:layout_height="@dimen/dimen_200dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fav_checkbox" />
+
+            <TextView
+                android:id="@+id/name_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_10dp"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/flag_image"
+                tools:text="Country Name" />
+
+            <TextView
+                android:id="@+id/capital_textview_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen_60dp"
+                android:layout_marginTop="@dimen/dimen_30dp"
+                android:text="Capital:"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/name_textview" />
+
+            <TextView
+                android:id="@+id/capital_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_30dp"
+                android:layout_marginEnd="@dimen/dimen_60dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/name_textview"
+                tools:text="TextView" />
+
+            <TextView
+                android:id="@+id/region_textview_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen_60dp"
+                android:layout_marginTop="@dimen/dimen_10dp"
+                android:text="Region:"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/capital_textview_title" />
+
+            <TextView
+                android:id="@+id/region_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_10dp"
+                android:layout_marginEnd="@dimen/dimen_60dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/capital_textview"
+                tools:text="TextView" />
+
+            <TextView
+                android:id="@+id/subregion_textview_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen_60dp"
+                android:layout_marginTop="@dimen/dimen_10dp"
+                android:text="Subregion:"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/region_textview_title" />
+
+
+            <TextView
+                android:id="@+id/subregion_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_10dp"
+                android:layout_marginEnd="@dimen/dimen_60dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/region_textview"
+                tools:text="TextView" />
+
+            <TextView
+                android:id="@+id/language_textview_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen_60dp"
+                android:layout_marginTop="@dimen/dimen_10dp"
+                android:text="Language (s):"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/subregion_textview_title" />
+
+            <TextView
+                android:id="@+id/language_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_10dp"
+                android:layout_marginEnd="@dimen/dimen_60dp"
+                android:maxWidth="@dimen/dimen_80dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/subregion_textview"
+                tools:text="TextView" />
+
+
+            <TextView
+                android:id="@+id/calling_code_textview_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen_60dp"
+                android:layout_marginTop="@dimen/dimen_10dp"
+                android:text="Calling code (s):"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/language_textview_title" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/calling_code_rv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_10dp"
+                android:layout_marginEnd="@dimen/dimen_60dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintStart_toStartOf="@+id/calling_code_textview_title"
+                app:layout_constraintTop_toBottomOf="@+id/calling_code_textview_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </ScrollView>
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="gone" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>
