@@ -29,13 +29,14 @@ import io.github.livenlearnaday.countrylistkotlin.databinding.CountryFragmentBin
 import io.github.livenlearnaday.countrylistkotlin.ui.MainActivity
 import io.github.livenlearnaday.countrylistkotlin.ui.countries.adapter.CountriesAdapter
 import io.github.livenlearnaday.countrylistkotlin.utils.Status
+import io.github.livenlearnaday.countrylistkotlin.utils.autoCleared
 import timber.log.Timber
 
 
 @AndroidEntryPoint
 class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
 
-    private lateinit var binding: CountryFragmentBinding
+    private var binding: CountryFragmentBinding by autoCleared()
     private val viewModel: CountriesViewModel by viewModels()
     private val detailViewModel: CountryDetailViewModel by viewModels()
     private lateinit var mSearchItem: MenuItem
