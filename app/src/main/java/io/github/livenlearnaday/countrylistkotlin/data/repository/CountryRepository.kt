@@ -31,6 +31,9 @@ class CountryRepository @Inject constructor (
         return countryDao.getSearchResults(name, capital)
     }
 
+    suspend fun clearCountryTable() = countryDao.clearCountryTable()
+
+
 
 
 

@@ -41,7 +41,10 @@ abstract class AppDatabase : RoomDatabase() {
                 AppDatabase::class.java,
                 "countrylistkotlin_db"
             )
-                .fallbackToDestructiveMigration()  // no migrations and clear database when upgrade the version
+                .fallbackToDestructiveMigration()
+                // no migrations and clear database when upgrade the database version
+                .fallbackToDestructiveMigrationOnDowngrade()
+                // no migrations and clear database when downgrade the database version
                 .build()
     }
 

@@ -9,14 +9,17 @@
     <application
         android:name="io.github.livenlearnaday.countrylistkotlin.MyApplication"
         android:theme="@style/AppTheme"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
       >
 
-        <activity android:name="io.github.livenlearnaday.countrylistkotlin.ui.MainActivity">
+        <activity
+            android:name="io.github.livenlearnaday.countrylistkotlin.ui.MainActivity"
+            android:exported="true"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

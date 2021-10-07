@@ -83,7 +83,11 @@ class CountriesViewModel @Inject constructor(
 
     fun getLoadedFlow() = dataStoreHelperRepository.getLoadedDataPrefFlow()
 
-
+    fun clearCountryTable(){
+        viewModelScope.launch {
+            repository.clearCountryTable()
+        }
+    }
 
 }
 

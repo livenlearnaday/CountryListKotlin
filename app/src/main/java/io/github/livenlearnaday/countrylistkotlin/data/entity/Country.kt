@@ -67,6 +67,9 @@ interface CountryDao {
     @Query("UPDATE country_table SET favorite = 0")
     suspend fun clearAllFavCountries()
 
+    @Query("DELETE FROM country_table")
+    suspend fun clearCountryTable()
+
 
 
 }

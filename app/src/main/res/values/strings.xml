@@ -16,7 +16,8 @@
 
 
     <string name="dialog_reload_countries_title">Reload data?</string>
-    <string name="dialog_reload_countries_message">All data (e.g. favorites) will be reset. Do you really want to reload data from the internet and reset current data?</string>
+    <string name="dialog_reload_countries_message">Data will be reloaded from the internet and all current data (e.g. favorites) will be reset. Do you really want to reload data from the internet and reset current data?</string>
+
 
     <string name="dialog_reset_fav_countries_title">Reset favorites?</string>
     <string name="dialog_reset_fav_countries_message">All favorites will be reset. Do you really want to reset?</string>

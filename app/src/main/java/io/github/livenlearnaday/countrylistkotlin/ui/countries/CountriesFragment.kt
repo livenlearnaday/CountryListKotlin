@@ -74,6 +74,9 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
         })
 
         Timber.v("onViewCreated loaded: %s", loaded)
+        if(!loaded){
+            viewModel.clearCountryTable()
+        }
         setupUI()
         setupObservers()
 
@@ -96,7 +99,7 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
 
     private fun setupObserverDataFromDb() {
         Timber.v("setupObserverDataFromDb loaded: %s", loaded)
-        viewModel.getAllCountriesFromDb().observe(viewLifecycleOwner, Observer {
+        viewModel.getAllCountriesFromDb().observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -131,7 +134,7 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
 
     private fun setupObserverDataFromApi() {
         Timber.v("setupObserverDataFromApi loaded: %s", loaded)
-        viewModel.getAllCountries().observe(viewLifecycleOwner, Observer {
+        viewModel.getAllCountries().observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -251,35 +254,36 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
 
     private fun filter(query: String) {
         if (query != mPrevQuery && query != "" && query != "%") {
-            var fixTextForQuery = "%$query%"
+            val fixTextForQuery = "%$query%"
             mPrevQuery = fixTextForQuery
 
-            viewModel.searchForItems(name = fixTextForQuery, capital = fixTextForQuery).observe(viewLifecycleOwner, Observer {
-                it?.let { resource ->
-                    when (resource.status) {
-                        Status.SUCCESS -> {
-                            binding.countriesRv.visibility = View.VISIBLE
-                            binding.progressBar.visibility = View.GONE
-                            resource.data?.let { countries ->
-                                retrieveList(countries)
+            viewModel.searchForItems(name = fixTextForQuery, capital = fixTextForQuery).observe(viewLifecycleOwner,
+                {
+                    it?.let { resource ->
+                        when (resource.status) {
+                            Status.SUCCESS -> {
+                                binding.countriesRv.visibility = View.VISIBLE
+                                binding.progressBar.visibility = View.GONE
+                                resource.data?.let { countries ->
+                                    retrieveList(countries)
+                                }
+
+                            }
+                            Status.ERROR -> {
+                                binding.countriesRv.visibility = View.VISIBLE
+                                binding.progressBar.visibility = View.GONE
+
+                                Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT)
+                                    .show()
                             }
 
-                        }
-                        Status.ERROR -> {
-                            binding.countriesRv.visibility = View.VISIBLE
-                            binding.progressBar.visibility = View.GONE
-
-                            Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT)
-                                .show()
-                        }
-
-                        Status.LOADING -> {
-                            binding.progressBar.visibility = View.VISIBLE
-                            binding.countriesRv.visibility = View.GONE
+                            Status.LOADING -> {
+                                binding.progressBar.visibility = View.VISIBLE
+                                binding.countriesRv.visibility = View.GONE
+                            }
                         }
                     }
-                }
-            })
+                })
 
         }
 
@@ -316,14 +320,15 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
         val dialogBuilder = AlertDialog.Builder(requireActivity())
         dialogBuilder.setMessage(R.string.dialog_reload_countries_message)
             .setCancelable(true)
-            .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener { dialog, id ->
+            .setPositiveButton(android.R.string.ok, { dialog, id ->
                 mCancelItem.isVisible = false
                 mSearchItem.isVisible = true
+                viewModel.clearCountryTable()
                 setupObserverDataFromApi()
             })
             .setNegativeButton(
                 android.R.string.cancel,
-                DialogInterface.OnClickListener { dialog, id ->
+                { dialog, id ->
                     dialog.dismiss()
 
                 })
@@ -343,7 +348,7 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
     private fun setObserverForFavList() {
         mCancelItem.isVisible = true
         mSearchItem.isVisible = false
-        viewModel.getAllFavCountries().observe(viewLifecycleOwner, Observer {
+        viewModel.getAllFavCountries().observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -386,7 +391,7 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
         val dialogBuilder = AlertDialog.Builder(requireActivity())
         dialogBuilder.setMessage(R.string.dialog_reset_fav_countries_message)
             .setCancelable(true)
-            .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener { dialog, id ->
+            .setPositiveButton(android.R.string.ok, { dialog, id ->
                 clearAllFav()
                 mCancelItem.isVisible = false
                 mSearchItem.isVisible = true
@@ -394,7 +399,7 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
             })
             .setNegativeButton(
                 android.R.string.cancel,
-                DialogInterface.OnClickListener { dialog, id ->
+                { dialog, id ->
                     dialog.dismiss()
 
                 })
