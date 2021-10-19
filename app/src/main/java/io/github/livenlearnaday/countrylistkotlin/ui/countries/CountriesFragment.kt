@@ -320,7 +320,7 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
         val dialogBuilder = AlertDialog.Builder(requireActivity())
         dialogBuilder.setMessage(R.string.dialog_reload_countries_message)
             .setCancelable(true)
-            .setPositiveButton(android.R.string.ok, { dialog, id ->
+            .setPositiveButton(android.R.string.ok, { _, _ ->
                 mCancelItem.isVisible = false
                 mSearchItem.isVisible = true
                 viewModel.clearCountryTable()
@@ -328,7 +328,7 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
             })
             .setNegativeButton(
                 android.R.string.cancel,
-                { dialog, id ->
+                { dialog, _ ->
                     dialog.dismiss()
 
                 })
@@ -391,7 +391,7 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
         val dialogBuilder = AlertDialog.Builder(requireActivity())
         dialogBuilder.setMessage(R.string.dialog_reset_fav_countries_message)
             .setCancelable(true)
-            .setPositiveButton(android.R.string.ok, { dialog, id ->
+            .setPositiveButton(android.R.string.ok, { _, _ ->
                 clearAllFav()
                 mCancelItem.isVisible = false
                 mSearchItem.isVisible = true
@@ -399,7 +399,7 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
             })
             .setNegativeButton(
                 android.R.string.cancel,
-                { dialog, id ->
+                { dialog, _ ->
                     dialog.dismiss()
 
                 })
