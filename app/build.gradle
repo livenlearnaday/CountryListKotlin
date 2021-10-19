@@ -36,17 +36,17 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
+
 
     configurations.all {
         resolutionStrategy {
             exclude group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-debug"
-
         }
     }
     defaultConfig {
@@ -56,11 +56,6 @@ android {
         unitTests.returnDefaultValues = true
     }
 
-
-    dexOptions {
-        preDexLibraries true
-        javaMaxHeapSize "2g" // Use gig increments depending on needs
-    }
 }
 
 dependencies {
