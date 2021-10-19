@@ -73,7 +73,7 @@ class CountriesAdapter @Inject constructor(
 
             }
 
-            itemBinding.favCheckbox.isChecked = country.favorite!!
+            itemBinding.favCheckbox.isChecked = country.favorite
 
 
         }
