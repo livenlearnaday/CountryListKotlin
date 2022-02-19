@@ -9,6 +9,6 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface CountryService {
-    @GET("all?fields=name,flag,capital,region,subregion,callingCodes,languages")
+    @GET("all_countries_7_fields.json")
     suspend  fun getAllCountries(): List<Country>
 }
