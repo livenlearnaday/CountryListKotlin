@@ -67,11 +67,7 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.getLoadedFlow().asLiveData().observe(viewLifecycleOwner, {
-            if (it != null) {
-                loaded = it
-            }
-        })
+        loaded = viewModel.getLoaded()
 
         Timber.v("onViewCreated loaded: %s", loaded)
         if(!loaded){

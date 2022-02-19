@@ -169,12 +169,6 @@ dependencies {
     kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hiltAndroidVersion"
 
 
-
-    //preference datastore
-    implementation "androidx.datastore:datastore-preferences-core:$datastorePreferencesVersion"
-    implementation "androidx.datastore:datastore-preferences:$datastorePreferencesVersion"
-
-
 }
 
 kapt {

@@ -4,7 +4,7 @@ import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.livenlearnaday.countrylistkotlin.data.entity.Country
 import io.github.livenlearnaday.countrylistkotlin.data.repository.CountryRepository
-import io.github.livenlearnaday.countrylistkotlin.data.repository.DataStoreHelperRepository
+import io.github.livenlearnaday.countrylistkotlin.data.repository.SharedPrefHelperRepository
 import io.github.livenlearnaday.countrylistkotlin.utils.Resource
 import kotlinx.coroutines.*
 import javax.inject.Inject
@@ -13,7 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CountriesViewModel @Inject constructor(
     private val repository: CountryRepository,
-    private val dataStoreHelperRepository: DataStoreHelperRepository
+    private val sharedPrefHelperRepository: SharedPrefHelperRepository
 ) : ViewModel() {
 
 
@@ -77,11 +77,12 @@ class CountriesViewModel @Inject constructor(
 
     fun setLoaded(loaded: Boolean){
         viewModelScope.launch {
-            dataStoreHelperRepository.setLoadedDataPref(loaded)
+            sharedPrefHelperRepository.setloaded(loaded)
         }
     }
 
-    fun getLoadedFlow() = dataStoreHelperRepository.getLoadedDataPrefFlow()
+    fun getLoaded() = sharedPrefHelperRepository.loaded()
+
 
     fun clearCountryTable(){
         viewModelScope.launch {

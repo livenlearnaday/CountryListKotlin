@@ -10,11 +10,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.github.livenlearnaday.countrylistkotlin.data.entity.CountryDao
 import io.github.livenlearnaday.countrylistkotlin.data.local.AppDatabase
-import io.github.livenlearnaday.countrylistkotlin.data.local.key_value_pairs.DataStoreHelper
+import io.github.livenlearnaday.countrylistkotlin.data.local.key_value_pairs.SharedPrefHelper
 import io.github.livenlearnaday.countrylistkotlin.data.remote.CountryApiHelper
 import io.github.livenlearnaday.countrylistkotlin.data.remote.CountryService
 import io.github.livenlearnaday.countrylistkotlin.data.repository.CountryRepository
-import io.github.livenlearnaday.countrylistkotlin.data.repository.DataStoreHelperRepository
+import io.github.livenlearnaday.countrylistkotlin.data.repository.SharedPrefHelperRepository
 import io.github.livenlearnaday.countrylistkotlin.utils.BASE_URL
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -57,9 +57,9 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideRepositoryDataStoreHelper(
-        dataStoreHelper: DataStoreHelper
-    ) = DataStoreHelperRepository(dataStoreHelper)
+    fun provideRepositorySharedPrefHelper(
+        sharedPrefHelper: SharedPrefHelper
+    ) = SharedPrefHelperRepository(sharedPrefHelper)
 
 
 }
