@@ -1,7 +1,7 @@
 # CountryListKotlin
 
 Android application that:
-- retrieve list of countries from restcountries api (Retrofit & okhttp3)
+- retrieve list of countries from saved json file in github (Retrofit & okhttp3)
 - store the retrieved data in database (room databases)
 - has option for user to marked/show/clear favorites
 - tap on calling code to use the code in the default dialer
