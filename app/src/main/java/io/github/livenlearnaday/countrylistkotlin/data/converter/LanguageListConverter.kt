@@ -10,7 +10,7 @@ class LanguageListConverter {
 
 
     @TypeConverter
-     fun stringToLanguageObjectList(data: String?): MutableList<Language?>? {
+    fun stringToLanguageObjectList(data: String?): MutableList<Language?>? {
         if (data == null) {
             return Collections.emptyList()
         }
@@ -20,10 +20,9 @@ class LanguageListConverter {
     }
 
     @TypeConverter
-    fun LanguageObjectListToString(someObjects: List<Language?>?): String? {
+    fun languageObjectListToString(someObjects: List<Language?>?): String? {
         val gson = Gson()
         return gson.toJson(someObjects)
     }
-
 
 }
