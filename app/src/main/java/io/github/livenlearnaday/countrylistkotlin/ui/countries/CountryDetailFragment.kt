@@ -1,32 +1,38 @@
 package io.github.livenlearnaday.countrylistkotlin.ui.countries
 
+import android.content.ActivityNotFoundException
 import android.content.Context.TELEPHONY_SERVICE
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.telephony.TelephonyManager
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.livenlearnaday.countrylistkotlin.R
 import io.github.livenlearnaday.countrylistkotlin.data.entity.Country
 import io.github.livenlearnaday.countrylistkotlin.data.entity.Language
 import io.github.livenlearnaday.countrylistkotlin.databinding.CountryDetailFragmentBinding
 import io.github.livenlearnaday.countrylistkotlin.ui.MainActivity
+import io.github.livenlearnaday.countrylistkotlin.ui.countries.adapter.CallingCodeEvent
 import io.github.livenlearnaday.countrylistkotlin.ui.countries.adapter.CallingCodesAdapter
 import io.github.livenlearnaday.countrylistkotlin.utils.MessageUtils
 import io.github.livenlearnaday.countrylistkotlin.utils.Status
 import io.github.livenlearnaday.countrylistkotlin.utils.autoCleared
+import io.github.livenlearnaday.countrylistkotlin.utils.loadSvgImage
+import timber.log.Timber
 
 
 @AndroidEntryPoint
-class CountryDetailFragment : Fragment(), CallingCodesAdapter.CallingCodesItemListener {
+class CountryDetailFragment : Fragment() {
 
     private var binding: CountryDetailFragmentBinding by autoCleared()
 
@@ -34,13 +40,13 @@ class CountryDetailFragment : Fragment(), CallingCodesAdapter.CallingCodesItemLi
 
     private var countryName: String = ""
 
-    private lateinit var adapter: CallingCodesAdapter
+    private lateinit var mCallingCodesAdapter: CallingCodesAdapter
 
-    private lateinit var mCountry: Country
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+
     }
 
     override fun onCreateView(
@@ -57,54 +63,59 @@ class CountryDetailFragment : Fragment(), CallingCodesAdapter.CallingCodesItemLi
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if ((activity as MainActivity).supportActionBar != null) {
+            (activity as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            (activity as MainActivity).supportActionBar?.setDisplayShowHomeEnabled(true)
+            (activity as MainActivity).supportActionBar?.setHomeButtonEnabled(true)
+            (activity as MainActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_cancel_24)
+        }
 
-        (activity as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        (activity as MainActivity).supportActionBar?.setDisplayShowHomeEnabled(true)
-        (activity as MainActivity).supportActionBar?.setHomeButtonEnabled(true)
-        (activity as MainActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_cancel_24)
+        (activity as MainActivity).setToolBarTitle(getString(R.string.title_fragment_country_detail))
 
         countryName = arguments?.getString("countryName").toString()
 
         setupObserverDataFromDb()
 
-
     }
-
 
     private fun setupObserverDataFromDb() {
 
-        viewModel.getCountryFromDb(countryName).observe(viewLifecycleOwner, Observer {
-            when (it.status) {
-                Status.SUCCESS -> {
+        viewModel.getCountry(countryName).observe(viewLifecycleOwner) {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        binding.progressBar.visibility = View.GONE
+                        binding.countryDetailLayout.visibility = View.VISIBLE
+//                    binding.bottomAppBar.visibility = View.VISIBLE
+//                    setBottomBarNav()
+                        resource.data?.let { country ->
+                            bindCountry(country)
+                            viewModel.setUpFavToggle(binding.favCheckbox, country)
 
-                    it.data?.let { countryResponse -> bindCountryFromDb(countryResponse) }
-                    binding.progressBar.visibility = View.GONE
-                    binding.countryDetailLayout.visibility = View.VISIBLE
+                        }
+                    }
+                    Status.ERROR -> {
 
-                    viewModel.setUpFavToggle(binding.favCheckbox, mCountry)
+                        binding.countryDetailLayout.visibility = View.GONE
+                        binding.progressBar.visibility = View.GONE
+//                    binding.bottomAppBar.visibility = View.GONE
 
-                }
-                Status.ERROR -> {
+                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT)
+                            .show()
+                    }
 
-                    binding.countryDetailLayout.visibility = View.GONE
-                    binding.progressBar.visibility = View.GONE
-
-                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-                Status.LOADING -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                    binding.countryDetailLayout.visibility = View.GONE
+                    Status.LOADING -> {
+                        binding.progressBar.visibility = View.VISIBLE
+                        binding.countryDetailLayout.visibility = View.GONE
+//                    binding.bottomAppBar.visibility = View.GONE
+                    }
                 }
             }
-        })
-
-
+        }
     }
 
 
-    private fun bindCountryFromDb(country: Country) {
+    private fun bindCountry(country: Country) {
         binding.nameTextview.text = country.name
         binding.capitalTextview.text = country.capital
         binding.regionTextview.text = country.region
@@ -114,49 +125,26 @@ class CountryDetailFragment : Fragment(), CallingCodesAdapter.CallingCodesItemLi
         val languageTxt = languages?.joinToString { language -> language.name.toString() }
         binding.languageTextview.text = languageTxt
 
-        setupCallingCodesUI(country.callingCodes)
+        loadSvgImage(binding.flagImage, country.flag)
 
-
-        val uri = Uri.parse(country.flag)
-        GlideToVectorYou
-            .init()
-            .with(binding.flagImage.context)
-            .setPlaceHolder(
-                R.drawable.border,
-                R.drawable.ic_baseline_error_outline_24
-            ) //loading,error
-            .load(uri, binding.flagImage)
-
-        mCountry = country
-
-
-    }
-
-    private fun setupCallingCodesUI(callingCodeList: ArrayList<String>?) {
-        binding.callingCodeRv.layoutManager = LinearLayoutManager(requireContext())
-        adapter = CallingCodesAdapter(callingCodeList, this)
-        binding.callingCodeRv.adapter = adapter
-
-    }
-
-    override fun onClickedCallingCode(callCode: String) {
-
-        if (isTelephonyEnabled()) {
-            val callIntent: Intent = Uri.parse("tel:+$callCode").let { number ->
-                Intent(Intent.ACTION_DIAL, number)
+        if(country.callingCodes.isNotEmpty()) {
+            binding.callingCodeRv.layoutManager = LinearLayoutManager(requireContext())
+            mCallingCodesAdapter = CallingCodesAdapter(lifecycle) {
+                onClickedCallingCode(it)
             }
-            (activity as MainActivity).startActivity(callIntent)
-
-
-        } else {
-            MessageUtils.showAlertDialog(
-                requireContext(),
-                null,
-                "Enable phone permission to use this feature."
+            binding.callingCodeRv.addItemDecoration(
+                DividerItemDecoration(
+                    binding.callingCodeRv.context,
+                    (binding.callingCodeRv.layoutManager as LinearLayoutManager).orientation
+                )
             )
+            binding.callingCodeRv.adapter = mCallingCodesAdapter
+            mCallingCodesAdapter.updateList(country.callingCodes)
         }
 
     }
+
+
 
     private fun isTelephonyEnabled(): Boolean {
         val telephonyManager =
@@ -182,6 +170,64 @@ class CountryDetailFragment : Fragment(), CallingCodesAdapter.CallingCodesItemLi
         findNavController().navigate(
             R.id.action_countryDetailFragment_to_countriesFragment
         )
+    }
+
+
+    private fun onClickedCallingCode(callingCodeEvent: CallingCodeEvent) {
+        when (callingCodeEvent) {
+            is CallingCodeEvent.callingCodeClicked -> {
+                if (isTelephonyEnabled()) {
+                    val callCodeWithPlusSign = "+${callingCodeEvent.callingCode}"
+                    Timber.v("call callCodeWithPlusSign: %s", callCodeWithPlusSign)
+//            val callIntent = Intent(Intent.ACTION_DIAL)
+//            callIntent.type = "*/*"
+//            callIntent.data = Uri.parse("tel:" + callCodeWithPlusSign)
+////            callIntent.data = Uri.fromParts("tel",callCodeWithPlusSign,null)
+
+//            Timber.v("call callIntent.data : " + callIntent.data.toString())
+
+                    //            val intent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", callCode, null))
+                    /*  val intent = Intent(Intent.ACTION_DIAL);
+                  intent.data = Uri.parse("tel:+$callCode")*/
+
+
+                    try {
+
+                        val callIntent: Intent =
+                            Uri.parse("tel:+${callingCodeEvent.callingCode}").let { number ->
+                                Intent(Intent.ACTION_DIAL, number)
+                            }
+//            val intent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", callCode, null))
+                        /*  val intent = Intent(Intent.ACTION_DIAL);
+                          intent.data = Uri.parse("tel:+$callCode")*/
+                        (activity as MainActivity).startActivity(callIntent)
+/*
+                val callIntent: Intent = Uri.parse("tel:$callCodeWithPlusSign").let { number ->
+                    Intent(Intent.ACTION_DIAL, number)
+                }
+
+                Timber.v("call callIntent.data : " + callIntent.data.toString())
+
+
+                (activity as MainActivity).startActivity(callIntent)*/
+
+                    } catch (e: ActivityNotFoundException) {
+                        MessageUtils.showAlertDialog(
+                            requireContext(),
+                            null,
+                            getString(R.string.error_no_activity_to_handle_intent)
+                        )
+                    }
+
+                } else {
+                    MessageUtils.showAlertDialog(
+                        requireContext(),
+                        null,
+                        getString(R.string.permission_enable_phone_permission)
+                    )
+                }
+            }
+        }
     }
 
 }

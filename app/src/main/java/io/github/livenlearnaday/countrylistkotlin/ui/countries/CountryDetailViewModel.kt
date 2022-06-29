@@ -9,23 +9,22 @@ import io.github.livenlearnaday.countrylistkotlin.utils.Resource
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
-
 @HiltViewModel
 class CountryDetailViewModel @Inject constructor(
     private val repository: CountryRepository
 ) : ViewModel() {
 
 
-    fun getCountryFromDb(name: String) = liveData(Dispatchers.IO) {
-        emit(Resource.loading(data = null))
-        try {
-            emit(Resource.success(data = repository.getCountryFromDb(name)))
-        } catch (exception: Exception) {
-            emit(Resource.error(data = null, message = exception.message ?: "Error Occurred."))
-        }
+     fun getCountry(name: String) =
+         liveData(Dispatchers.IO) {
+             emit(Resource.loading(data = null))
+             try {
+                 emit(Resource.success(data = repository.getCountry(name)))
+             } catch (exception: Exception) {
+                 emit(Resource.error(data = null, message = exception.message ?: "Error Occurred."))
+             }
+         }
 
-
-    }
 
 
     fun setUpFavToggle(checkBox: CheckBox, country: Country) {
@@ -40,7 +39,7 @@ class CountryDetailViewModel @Inject constructor(
 
     fun updateFavCountry(fav:Boolean, countryName:String){
         viewModelScope.launch {
-            repository.updateCountryFav(fav, countryName)
+            repository.updateCountryFavLocalDataSource(fav, countryName)
         }
     }
 
