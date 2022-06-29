@@ -1,30 +1,45 @@
 <resources>
     <string name="app_name">CountryListKotlin</string>
-    <string name="title_activity_maps">Map</string>
 
-    <string name="country">Country:</string>
-    <string name="flag">flag image</string>
+    <!--    Title-->
+    <string name="title_fragment_country_list">Country List</string>
+    <string name="title_fragment_country_detail">Country Detail</string>
 
     <string name="country_name">Country name</string>
+    <string name="country">Country:</string>
+    <string name="flag">flag image</string>
 
     <string name="refresh_menu_title">Fetch Data</string>
     <string name="search_menu_title">Search Country</string>
     <string name="cancel_menu_title">Cancel Show All</string>
-    <string name="country_search_hint">type country name</string>
+    <string name="country_search_hint">country name or capital name</string>
     <string name="show_fav_menu_title">Show Favs</string>
+    <string name="set_fav_menu_title">Set Fav</string>
     <string name="clear_all_fav_menu_title">Clear All Favs</string>
 
 
     <string name="dialog_reload_countries_title">Reload data?</string>
     <string name="dialog_reload_countries_message">Data will be reloaded from the internet and all current data (e.g. favorites) will be reset. Do you really want to reload data from the internet and reset current data?</string>
 
-
     <string name="dialog_reset_fav_countries_title">Reset favorites?</string>
     <string name="dialog_reset_fav_countries_message">All favorites will be reset. Do you really want to reset?</string>
+    <string name="countries">Countries</string>
+    <string name="transport">Transport</string>
+    <string name="capital_textview_title">Capital:</string>
+    <string name="region_textview_title">Region:</string>
+    <string name="subregion_textview_title">Subregion:</string>
+    <string name="language_textview_title">Language (s):</string>
+    <string name="calling_codes_textview_title">Calling code (s):</string>
 
 
+    <!--    errors-->
+    <string name= "error_loading_message">Error occurred while loading. Please try again.</string>
+    <string name="error_no_activity_to_handle_intent">No Activity to handle DIAL intent.</string>
+    <string name="permission_enable_phone_permission">Enable phone permission to use this feature.</string>
 
 
+    <!--    action-->
+    <string name= "countries_loading_message">Loading data...</string>
 
 
 
