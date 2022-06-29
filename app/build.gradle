@@ -7,22 +7,42 @@ plugins {
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
-    buildToolsVersion rootProject.buildToolsVersion
 
     defaultConfig {
+        namespace "io.github.livenlearnaday.countrylistkotlin"
         applicationId "io.github.livenlearnaday.countrylistkotlin"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         versionCode 1
         versionName "1.0"
         vectorDrawables.useSupportLibrary = true
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "io.github.livenlearnaday.countrylistkotlin.CustomTestRunner"
     }
 
     buildFeatures {
         viewBinding true
 
+    }
+
+    testOptions.unitTests {
+        includeAndroidResources = true
+
+        all {
+            testLogging {
+                events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+            }
+        }
+    }
+
+
+    sourceSets {
+        String sharedTestDir = 'src/sharedTest/java'
+        test {
+            java.srcDirs += sharedTestDir
+        }
+        androidTest {
+            java.srcDirs += sharedTestDir
+        }
     }
 
     buildTypes {
@@ -52,10 +72,17 @@ android {
     defaultConfig {
         testInstrumentationRunnerArguments clearPackageData: 'true'
     }
-    testOptions {
-        unitTests.returnDefaultValues = true
-    }
 
+    namespace 'io.github.livenlearnaday.countrylistkotlin'
+
+}
+
+kapt {
+    arguments {
+        // Make Hilt share the same definition of Components in tests instead of
+        // creating a new set of Components per test class.
+        arg("dagger.hilt.shareTestComponents", "true")
+    }
 }
 
 dependencies {
@@ -93,46 +120,38 @@ dependencies {
 
 
     //Timber logging
-    implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation "com.jakewharton.timber:timber:$timberLoggingVersion"
 
     // database
-    implementation "androidx.room:room-rxjava2:$roomDatabase"
-    implementation "androidx.room:room-runtime:$roomDatabase"
-    implementation "androidx.room:room-ktx:$roomDatabase"
-    kapt "androidx.room:room-compiler:$roomDatabase"
+    implementation "androidx.room:room-rxjava2:$roomDatabaseVersion"
+    implementation "androidx.room:room-runtime:$roomDatabaseVersion"
+    implementation "androidx.room:room-ktx:$roomDatabaseVersion"
+    kapt "androidx.room:room-compiler:$roomDatabaseVersion"
 
 
-    //testing
+    // AndroidX Test - JVM testing
+    testImplementation "androidx.test:core-ktx:$androidxCoreKtxVersion"
+    testImplementation "androidx.test.ext:junit-ktx:$androidXTestVersion"
+    testImplementation "androidx.test:rules:$androidXTestRulesVersion"
+    // Once https://issuetracker.google.com/127986458 is fixed this can be testImplementation
+    debugImplementation "androidx.fragment:fragment-testing:$fragmentVersion"
+    implementation "androidx.fragment:fragment:$fragmentVersion"
 
-    //JUnit UI Testing
-    androidTestImplementation "androidx.test.ext:junit-ktx:$androidXJunitVersion"
-    androidTestImplementation "org.assertj:assertj-core:$assertjVersion"
-    androidTestImplementation "androidx.test.ext:junit:$androidXJunitVersion"
-
-    //JUnit
-    testImplementation 'junit:junit:4.13.2'
-    testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
-
-    //mockk
-    testImplementation "io.mockk:mockk:$mockVersion"
-
-
-    //Expresso
-    implementation "androidx.test.espresso:espresso-idling-resource:$espressoVersion"
-    implementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoIntentsVersion"
+    // AndroidX Test - Instrumented testing
+    androidTestImplementation "androidx.test:core-ktx:$androidxCoreKtxVersion"
+    androidTestImplementation "androidx.test.ext:junit-ktx:$androidXTestVersion"
+    androidTestImplementation "androidx.test:rules:$androidXTestRulesVersion"
+    androidTestImplementation "androidx.room:room-testing:$roomDatabaseVersion"
+    androidTestImplementation "androidx.arch.core:core-testing:$coreTestingVersion"
+    androidTestImplementation "androidx.navigation:navigation-testing:$navigationVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
+    implementation "androidx.test.espresso:espresso-idling-resource:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:$espressoVersion"
+    implementation "androidx.test.espresso:espresso-idling-resource:$espressoVersion"
 
-
-    // coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesAndroidVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$coroutinesVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutinesVersion"
-
-    //coroutines testing
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesTestVersion"
-    implementation "androidx.arch.core:core-testing:$coreTestingVersion"
+    androidTestImplementation "androidx.legacy:legacy-support-v4:$androidXLegacySupport"
 
 // retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
