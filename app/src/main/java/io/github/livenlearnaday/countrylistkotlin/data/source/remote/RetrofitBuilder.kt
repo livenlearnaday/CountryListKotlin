@@ -1,4 +1,4 @@
-package io.github.livenlearnaday.countrylistkotlin.data.remote
+package io.github.livenlearnaday.countrylistkotlin.data.source.remote
 
 
 import io.github.livenlearnaday.countrylistkotlin.utils.BASE_URL

@@ -20,7 +20,7 @@ class CallingCodeListConverter {
     }
 
     @TypeConverter
-    fun CallingCodeObjectListToString(someObjects: List<CallingCode?>?): String? {
+    fun callingCodeObjectListToString(someObjects: List<CallingCode?>?): String? {
         val gson = Gson()
         return gson.toJson(someObjects)
     }

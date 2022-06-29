@@ -1,47 +1,33 @@
 package io.github.livenlearnaday.countrylistkotlin.data.repository
 
-import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
+import io.github.livenlearnaday.countrylistkotlin.data.Result
 import io.github.livenlearnaday.countrylistkotlin.data.entity.Country
-import io.github.livenlearnaday.countrylistkotlin.data.entity.CountryDao
-import io.github.livenlearnaday.countrylistkotlin.data.remote.CountryApiHelper
-import javax.inject.Inject
 
 
-class CountryRepository @Inject constructor (
-    private val countryApiHelper: CountryApiHelper,
-    private val countryDao: CountryDao
-) {
+interface CountryRepository {
 
-    suspend  fun getAllCountriesFromApi(): List<Country> = countryApiHelper.getAllCountries()
+    fun observeCountries():LiveData<Result<List<Country>>>
 
-    fun getCountryFromDb(name: String) = countryDao.getCountry(name)
+    fun observeCountriesFav():LiveData<Result<List<Country>>>
 
-    fun getAllCountriesFromDb(): List<Country> = countryDao.getAllCountriesInAscOrder()
+    suspend fun getCountries(forceUpdate: Boolean):List<Country>
 
-    suspend fun insertAllCountries(countries: List<Country>) = countryDao.insertAll(countries)
+    suspend fun getCountry(name: String): Country
 
-    suspend fun updateCountryFav(fav:Boolean, countryName:String) = countryDao.updateCountryFav(fav,countryName)
+    suspend fun insertCountries(countries: List<Country>)
 
-    fun getAllFavCountries(): List<Country>  = countryDao.getAllFavCountries()
+    suspend fun updateCountryLocalDataSource(country: Country)
 
-    suspend fun clearAllFavCountries() = countryDao.clearAllFavCountries()
+    suspend fun updateCountryFavLocalDataSource(fav:Boolean, countryName:String)
 
-    fun search(name : String, capital: String) : List<Country> {
-        return countryDao.getSearchResults(name, capital)
-    }
+    suspend fun getFavCountries(): List<Country>
 
-    suspend fun clearCountryTable() = countryDao.clearCountryTable()
+    suspend fun getSearchedCountries(name:String, capital:String): List<Country>
 
+    suspend fun clearAllFavCountries()
 
-
-
-
-    /*@WorkerThread
-    fun search(name : String, capital: String) : List<Country> {
-        return countryDao.getSearchResults(name, capital)
-    }
-*/
+    suspend fun clearCountryTable()
 
 
 }

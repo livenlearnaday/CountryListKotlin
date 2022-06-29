@@ -3,7 +3,6 @@ package io.github.livenlearnaday.countrylistkotlin
 import android.app.Application
 import android.util.Log
 import dagger.hilt.android.HiltAndroidApp
-import io.github.livenlearnaday.countrylistkotlin.data.local.AppDatabase
 
 
 import timber.log.Timber
@@ -31,16 +30,16 @@ class MyApplication : Application() {
     private class ReleaseLogTree : Timber.Tree() {
         override fun log(
             priority: Int, tag: String?, message: String,
-            throwable: Throwable?
+            t: Throwable?
         ) {
             if (priority == Log.DEBUG || priority == Log.VERBOSE || priority == Log.INFO) {
                 return
             }
             if (priority == Log.ERROR) {
-                if (throwable == null) {
+                if (t == null) {
                     Timber.e(message)
                 } else {
-                    Timber.e(throwable, message)
+                    Timber.e(t, message)
                 }
             }
         }

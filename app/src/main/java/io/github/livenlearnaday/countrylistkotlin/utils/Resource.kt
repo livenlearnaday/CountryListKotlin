@@ -1,7 +1,5 @@
 package io.github.livenlearnaday.countrylistkotlin.utils
 
-import retrofit2.Response
-
 data class Resource<out T>(val status: Status, val data: T?, val message: String?) {
 
 

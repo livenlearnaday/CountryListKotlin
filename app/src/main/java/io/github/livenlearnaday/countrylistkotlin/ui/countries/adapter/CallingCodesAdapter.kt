@@ -1,65 +1,75 @@
 package io.github.livenlearnaday.countrylistkotlin.ui.countries.adapter
 
+
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.scopes.FragmentScoped
 import io.github.livenlearnaday.countrylistkotlin.databinding.CallingCodesItemBinding
 import javax.inject.Inject
 
-
 @FragmentScoped
 class CallingCodesAdapter @Inject constructor(
-    private val callingCodesList: ArrayList<String>?,
-    private val listener: CallingCodesItemListener
-) :
-    RecyclerView.Adapter<CallingCodesAdapter.CallingCodesViewHolder>() {
+    val mLifecycle: Lifecycle,
+    val mCountryDetailEvent: (CallingCodeEvent) -> Unit
+) :  RecyclerView.Adapter<CallingCodesAdapter.CallingCodesViewHolder>() {
 
-    interface CallingCodesItemListener {
-        fun onClickedCallingCode(
-            callCode: String
-        )
+
+    private var mItems = mutableListOf<String>()
+
+    fun updateList(callingCodes: List<String>) {
+        mItems.clear()
+        mItems.addAll(callingCodes)
+        callingCodes.forEachIndexed{ pos, code ->
+            if(mItems[pos] != code ){
+                notifyItemChanged(pos)
+            }
+        }
     }
 
+    override fun getItemCount(): Int = mItems.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CallingCodesViewHolder {
         val binding =
             CallingCodesItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return CallingCodesViewHolder(binding, listener)
+        return CallingCodesViewHolder(binding, mCountryDetailEvent)
     }
 
-
-    override fun getItemCount(): Int = callingCodesList!!.size
-
-    override fun onBindViewHolder(holder: CallingCodesViewHolder, position: Int) =
-        holder.bind(callingCodesList!![position])
+    override fun onBindViewHolder(holder: CallingCodesViewHolder, position: Int) =   holder.bind(mItems[position])
 
 
-    class CallingCodesViewHolder(
-        private val itemBinding: CallingCodesItemBinding,
-        private val listener: CallingCodesItemListener
-      ) : RecyclerView.ViewHolder(itemBinding.root), View.OnClickListener {
+    class CallingCodesViewHolder (
+        private val binding: CallingCodesItemBinding,
+        val mCountryDetailEvent: (CallingCodeEvent) -> Unit
+      ) : RecyclerView.ViewHolder(binding.root){
 
         private lateinit var callCode: String
 
-        init {
-            itemBinding.root.setOnClickListener(this)
-        }
 
         fun bind(item: String) {
             this.callCode = item
-            itemBinding.callingCodeTextview.text = item
+            binding.callingCodeTextview.text = item
 
+            initListeners()
 
         }
 
-        override fun onClick(v: View?) {
-            callCode.let { listener.onClickedCallingCode(callCode) }
+        private fun initListeners() {
+            binding.callImageview.setOnClickListener {
+                mCountryDetailEvent.invoke(CallingCodeEvent.callingCodeClicked(callCode))
+            }
+
         }
+
+
     }
 
 
 }
+
+
+
+
 
 

@@ -4,38 +4,32 @@ package io.github.livenlearnaday.countrylistkotlin.ui.countries
 import android.app.AlertDialog
 import android.app.SearchManager
 import android.content.Context
-import android.content.DialogInterface
-import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
-import android.widget.Toolbar
-import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
-import androidx.core.app.ActivityCompat.recreate
 import androidx.core.os.bundleOf
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.livenlearnaday.countrylistkotlin.R
-import io.github.livenlearnaday.countrylistkotlin.data.entity.Country
 import io.github.livenlearnaday.countrylistkotlin.databinding.CountryFragmentBinding
 import io.github.livenlearnaday.countrylistkotlin.ui.MainActivity
 import io.github.livenlearnaday.countrylistkotlin.ui.countries.adapter.CountriesAdapter
+import io.github.livenlearnaday.countrylistkotlin.ui.countries.adapter.CountryEvent
 import io.github.livenlearnaday.countrylistkotlin.utils.Status
 import io.github.livenlearnaday.countrylistkotlin.utils.autoCleared
 import timber.log.Timber
 
 
 @AndroidEntryPoint
-class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
+class CountriesFragment : Fragment() {
 
+
+    //use autocleared class, so that binding is nullified in onDestroyView
     private var binding: CountryFragmentBinding by autoCleared()
     private val viewModel: CountriesViewModel by viewModels()
     private val detailViewModel: CountryDetailViewModel by viewModels()
@@ -43,9 +37,6 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
     private lateinit var mCancelItem: MenuItem
     private lateinit var mAdapter: CountriesAdapter
     private var mPrevQuery: String = ""
-
-    private var loaded: Boolean = false
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,30 +50,25 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
         savedInstanceState: Bundle?
     ): View {
         binding = CountryFragmentBinding.inflate(inflater, container, false)
-
         return binding.root
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as MainActivity).setToolBarTitle(getString(R.string.title_fragment_country_list))
 
-        loaded = viewModel.getLoaded()
-
-        Timber.v("onViewCreated loaded: %s", loaded)
-        if(!loaded){
-            viewModel.clearCountryTable()
-        }
-        setupUI()
-        setupObservers()
+        initRecyclerView()
+        setupCountriesObserver()
 
     }
 
 
-    private fun setupUI() {
+    private fun initRecyclerView() {
         binding.countriesRv.layoutManager = LinearLayoutManager(requireContext())
-
-        mAdapter = CountriesAdapter(arrayListOf(), this)
+        mAdapter = CountriesAdapter(lifecycle) {
+            onCountryClicked(it)
+        }
         binding.countriesRv.addItemDecoration(
             DividerItemDecoration(
                 binding.countriesRv.context,
@@ -93,65 +79,17 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
 
     }
 
-    private fun setupObserverDataFromDb() {
-        Timber.v("setupObserverDataFromDb loaded: %s", loaded)
-        viewModel.getAllCountriesFromDb().observe(viewLifecycleOwner, {
+
+    private fun setupCountriesObserver() {
+        viewModel.getCountriesFromApi.observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        mCancelItem.isVisible = false
-                        mSearchItem.isVisible = true
                         binding.countriesRv.visibility = View.VISIBLE
                         binding.progressBar.visibility = View.GONE
                         resource.data?.let { countries ->
-                            retrieveList(countries)
+                            mAdapter.updateList(countries)
                         }
-
-
-                    }
-                    Status.ERROR -> {
-
-                        binding.countriesRv.visibility = View.GONE
-                        binding.progressBar.visibility = View.GONE
-
-                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT)
-                            .show()
-                    }
-
-                    Status.LOADING -> {
-                        binding.progressBar.visibility = View.VISIBLE
-                        binding.countriesRv.visibility = View.GONE
-                    }
-                }
-            }
-        })
-    }
-
-
-    private fun setupObserverDataFromApi() {
-        Timber.v("setupObserverDataFromApi loaded: %s", loaded)
-        viewModel.getAllCountries().observe(viewLifecycleOwner, {
-            it?.let { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
-
-                        binding.countriesRv.visibility = View.VISIBLE
-                        binding.progressBar.visibility = View.GONE
-                        resource.data?.let { countries ->
-                            retrieveList(countries)
-                        }
-
-                        viewModel.insertAllCountries(resource.data!!)
-
-                        Timber.v("setupObserverDataFromApi before setting is loaded: %s", loaded)
-
-                        loaded = true
-
-                        viewModel.setLoaded(loaded)
-
-                        Timber.v("setupObserverDataFromApi after setting is loaded: %s", loaded)
-
-
                     }
                     Status.ERROR -> {
                         binding.countriesRv.visibility = View.VISIBLE
@@ -160,32 +98,42 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
                         Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT)
                             .show()
                     }
-
                     Status.LOADING -> {
                         binding.progressBar.visibility = View.VISIBLE
                         binding.countriesRv.visibility = View.GONE
                     }
                 }
             }
-        })
+        }
+
     }
 
-    override fun onClickedCountry(countryName: String) {
-        findNavController().navigate(
-            R.id.action_countriesFragment_to_countryDetailFragment,
-            bundleOf(
-                "countryName" to countryName
-            )
-        )
-    }
+    private fun setObserverForFavList() {
+        mCancelItem.isVisible = true
+        mSearchItem.isVisible = false
+        viewModel.favCountries().observe(viewLifecycleOwner) {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        binding.countriesRv.visibility = View.VISIBLE
+                        binding.progressBar.visibility = View.GONE
+                        resource.data?.let { countries ->
+                            mAdapter.updateList(countries)
+                        }
+                    }
+                    Status.ERROR -> {
+                        binding.countriesRv.visibility = View.VISIBLE
+                        binding.progressBar.visibility = View.GONE
 
-    override fun onClickedFav(country: Country) {
-        detailViewModel.updateFavCountry(country.favorite, country.name)
-    }
-
-    private fun retrieveList(countries: List<Country>) {
-        mAdapter.apply {
-            addAllCountries(countries)
+                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    Status.LOADING -> {
+                        binding.progressBar.visibility = View.VISIBLE
+                        binding.countriesRv.visibility = View.GONE
+                    }
+                }
+            }
         }
     }
 
@@ -194,15 +142,16 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
         inflater.inflate(R.menu.menu_country_fragment, menu)
+
         val refreshItem: MenuItem = menu.findItem(R.id.refresh_menu)
         refreshItem.isVisible = true
 
-
         val clearAllFavs: MenuItem = menu.findItem(R.id.clear_all_fav_menu)
-        clearAllFavs.isVisible = true
-
         val showFavs: MenuItem = menu.findItem(R.id.show_fav_menu)
-        showFavs.isVisible = true
+        viewModel.countriesFav.observe(viewLifecycleOwner) {
+            clearAllFavs.isVisible = it.isNotEmpty()
+            showFavs.isVisible = it.isNotEmpty()
+        }
 
         mCancelItem = menu.findItem(R.id.cancel_menu)
         mCancelItem.isVisible = false
@@ -238,8 +187,7 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
             }
 
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-                //call all countries from database
-                setupObserverDataFromDb()
+                setupCountriesObserver()
                 return true
             }
         })
@@ -249,49 +197,56 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
 
 
     private fun filter(query: String) {
+//        var searchText = "$query%"
         if (query != mPrevQuery && query != "" && query != "%") {
             val fixTextForQuery = "%$query%"
             mPrevQuery = fixTextForQuery
 
-            viewModel.searchForItems(name = fixTextForQuery, capital = fixTextForQuery).observe(viewLifecycleOwner,
-                {
-                    it?.let { resource ->
-                        when (resource.status) {
-                            Status.SUCCESS -> {
-                                binding.countriesRv.visibility = View.VISIBLE
-                                binding.progressBar.visibility = View.GONE
-                                resource.data?.let { countries ->
-                                    retrieveList(countries)
-                                }
+            viewModel.searchedCountryResult(
+                name = fixTextForQuery,
+                capital = fixTextForQuery
+            ).observe(
+                viewLifecycleOwner
+            ) {
 
-                            }
-                            Status.ERROR -> {
-                                binding.countriesRv.visibility = View.VISIBLE
-                                binding.progressBar.visibility = View.GONE
-
-                                Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT)
-                                    .show()
-                            }
-
-                            Status.LOADING -> {
-                                binding.progressBar.visibility = View.VISIBLE
-                                binding.countriesRv.visibility = View.GONE
+                it?.let { resource ->
+                    when (resource.status) {
+                        Status.SUCCESS -> {
+                            binding.countriesRv.visibility = View.VISIBLE
+                            binding.progressBar.visibility = View.GONE
+                            resource.data?.let { countries ->
+                                mAdapter.updateList(countries)
                             }
                         }
+                        Status.ERROR -> {
+                            binding.countriesRv.visibility = View.VISIBLE
+                            binding.progressBar.visibility = View.GONE
+
+                            Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                        Status.LOADING -> {
+                            binding.progressBar.visibility = View.VISIBLE
+                            binding.countriesRv.visibility = View.GONE
+                        }
                     }
-                })
-
+                }
+            }
         }
-
     }
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        Timber.v("menu: Enter menu selection")
+        Timber.d("menu: Enter menu selection")
+        super.onOptionsItemSelected(item)
+        Timber.d("menu, %d %s: navigate up selected", item.itemId, item.itemId.toString())
+
         return when (item.itemId) {
             R.id.cancel_menu -> {
-                Timber.v("menu: navigate up selected")
-                setupObservers()
+                Timber.d("menu, cancel menu selected")
+                mCancelItem.isVisible = false
+                mSearchItem.isVisible = true
+                setupCountriesObserver()
                 true
             }
             R.id.refresh_menu -> {
@@ -316,18 +271,21 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
         val dialogBuilder = AlertDialog.Builder(requireActivity())
         dialogBuilder.setMessage(R.string.dialog_reload_countries_message)
             .setCancelable(true)
-            .setPositiveButton(android.R.string.ok, { _, _ ->
+            .setPositiveButton(android.R.string.ok) { _, _ ->
                 mCancelItem.isVisible = false
                 mSearchItem.isVisible = true
-                viewModel.clearCountryTable()
-                setupObserverDataFromApi()
-            })
+                viewModel.refreshedCountries.observe(viewLifecycleOwner) {
+                    it.data?.let { countries ->
+                        mAdapter.updateList(countries)
+                    }
+                }
+            }
             .setNegativeButton(
-                android.R.string.cancel,
-                { dialog, _ ->
-                    dialog.dismiss()
+                android.R.string.cancel
+            ) { dialog, _ ->
+                dialog.dismiss()
 
-                })
+            }
 
         val alert = dialogBuilder.create()
         alert.setTitle(R.string.dialog_reload_countries_title)
@@ -336,69 +294,27 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
 
     }
 
-    private fun clearAllFav() {
-        viewModel.clearAllFavCountries()
-    }
-
-
-    private fun setObserverForFavList() {
-        mCancelItem.isVisible = true
-        mSearchItem.isVisible = false
-        viewModel.getAllFavCountries().observe(viewLifecycleOwner, {
-            it?.let { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        binding.countriesRv.visibility = View.VISIBLE
-                        binding.progressBar.visibility = View.GONE
-                        resource.data?.let { countries ->
-                            retrieveList(countries)
-                        }
-
-                    }
-                    Status.ERROR -> {
-                        binding.countriesRv.visibility = View.VISIBLE
-                        binding.progressBar.visibility = View.GONE
-
-                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT)
-                            .show()
-                    }
-
-                    Status.LOADING -> {
-                        binding.progressBar.visibility = View.VISIBLE
-                        binding.countriesRv.visibility = View.GONE
-                    }
-                }
-            }
-        })
-
-    }
-
-
-    private fun setupObservers() {
-        if (loaded) {
-            setupObserverDataFromDb()
-        } else {
-            setupObserverDataFromApi()
-        }
-    }
-
 
     private fun confirmResetFav() {
         val dialogBuilder = AlertDialog.Builder(requireActivity())
         dialogBuilder.setMessage(R.string.dialog_reset_fav_countries_message)
             .setCancelable(true)
-            .setPositiveButton(android.R.string.ok, { _, _ ->
-                clearAllFav()
+            .setPositiveButton(android.R.string.ok) { _, _ ->
                 mCancelItem.isVisible = false
                 mSearchItem.isVisible = true
-                setupObservers()
-            })
+                viewModel.clearAllFavCountries()
+                viewModel.countriesFromDb.observe(viewLifecycleOwner) {
+                    it.data?.let { countries ->
+                        mAdapter.updateList(countries)
+                    }
+                }
+            }
             .setNegativeButton(
-                android.R.string.cancel,
-                { dialog, _ ->
-                    dialog.dismiss()
+                android.R.string.cancel
+            ) { dialog, _ ->
+                dialog.dismiss()
 
-                })
+            }
 
         val alert = dialogBuilder.create()
         alert.setTitle(R.string.dialog_reset_fav_countries_title)
@@ -407,6 +323,28 @@ class CountriesFragment : Fragment(), CountriesAdapter.CountryItemListener {
 
     }
 
+
+
+
+    private fun onCountryClicked(countryEvent: CountryEvent) {
+        when (countryEvent) {
+            is CountryEvent.countryClicked -> {
+                findNavController().navigate(
+                    R.id.action_countriesFragment_to_countryDetailFragment,
+                    bundleOf(
+                        "countryName" to countryEvent.country.name
+                    )
+                )
+            }
+
+            is CountryEvent.countryFavClicked -> {
+                detailViewModel.updateFavCountry(
+                    countryEvent.country.favorite,
+                    countryEvent.country.name
+                )
+            }
+        }
+    }
 
 
 }

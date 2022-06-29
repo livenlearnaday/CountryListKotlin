@@ -153,5 +153,7 @@
     <color name="Navy">#000080</color>
     <color name="Black">#000000</color>
     <color name="ToolBarColor">#4169E1</color>
+    <color name="ToolBarMenuItemColor">#E8E9ED</color>
+
 
 </resources>
