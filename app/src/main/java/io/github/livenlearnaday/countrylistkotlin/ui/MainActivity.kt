@@ -39,4 +39,8 @@ class MainActivity : BaseActivity() {
 
     }
 
+    fun setToolBarTitle(title: String) {
+        binding!!.toolbar.appTitleToolbar.text = title
+    }
+
 }
