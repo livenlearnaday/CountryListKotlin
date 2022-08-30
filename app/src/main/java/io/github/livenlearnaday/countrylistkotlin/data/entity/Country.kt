@@ -28,7 +28,17 @@ data class Country(
     var callingCodes: List<String>,
     var favorite: Boolean = false,
 
-    )
+    ){
+    constructor(
+        name:String,
+        capital:String?,
+        region:String?,
+        subregion:String?,
+        flag:String?,
+        languages:List<Language>?,
+        callingCodes:List<String>,
+    ) : this(0, name, capital,region,subregion,flag,languages,callingCodes, false)
+}
 
 
 

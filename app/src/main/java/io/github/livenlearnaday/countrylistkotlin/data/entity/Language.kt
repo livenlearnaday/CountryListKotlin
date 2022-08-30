@@ -12,6 +12,11 @@ data class Language(
     var nativeName: String? = "",
 ) : Serializable {
 
+    constructor(
+        name: String,
+        nativeName: String
+    ) : this(0, name, nativeName)
+
     @SerializedName("iso639_1")
     @Expose
     var iso6391: String? = ""
