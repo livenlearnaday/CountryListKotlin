@@ -119,7 +119,6 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$appcompatVersion"
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayoutVersion"
     implementation "com.google.android.material:material:$androidMaterialVersion"
-    implementation "androidx.activity:activity-ktx:$activityKtxVersion"
 
 
     //Navigation
@@ -143,11 +142,17 @@ dependencies {
 
     // AndroidX Test - JVM testing
     testImplementation "androidx.test:core-ktx:$androidxCoreKtxVersion"
+    testImplementation "androidx.arch.core:core-testing:$coreTestingVersion"
     testImplementation "androidx.test.ext:junit-ktx:$androidXTestVersion"
     testImplementation "androidx.test:rules:$androidXTestRulesVersion"
     // Once https://issuetracker.google.com/127986458 is fixed this can be testImplementation
     debugImplementation "androidx.fragment:fragment-testing:$fragmentVersion"
     implementation "androidx.fragment:fragment:$fragmentVersion"
+
+    //unit testing
+    testImplementation 'junit:junit:4.12'
+
+
 
     // AndroidX Test - Instrumented testing
     androidTestImplementation "androidx.test:core-ktx:$androidxCoreKtxVersion"
@@ -180,6 +185,11 @@ dependencies {
     //svg image handling
     implementation 'com.github.corouteam:GlideToVectorYou:v2.0.0'
 
+    //coroutines
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutinesVersion"
+
 
     // Hilt
     implementation "com.google.dagger:hilt-android:$hiltAndroidVersion"
@@ -192,6 +202,7 @@ dependencies {
     //Hilt Testing
     // For Robolectric tests
     testImplementation "com.google.dagger:hilt-android-testing:$hiltAndroidVersion"
+    testImplementation "org.robolectric:robolectric:$robolectricVersion"
     // hilt testing
     kaptTest "com.google.dagger:hilt-android-compiler:$hiltAndroidVersion"
     // For instrumented tests
