@@ -27,7 +27,7 @@ import io.github.livenlearnaday.countrylistkotlin.ui.countries.adapter.CallingCo
 import io.github.livenlearnaday.countrylistkotlin.utils.MessageUtils
 import io.github.livenlearnaday.countrylistkotlin.utils.Status
 import io.github.livenlearnaday.countrylistkotlin.utils.autoCleared
-import io.github.livenlearnaday.countrylistkotlin.utils.loadSvgImage
+import io.github.livenlearnaday.countrylistkotlin.utils.loadUrl
 import timber.log.Timber
 
 
@@ -125,7 +125,9 @@ class CountryDetailFragment : Fragment() {
         val languageTxt = languages?.joinToString { language -> language.name.toString() }
         binding.languageTextview.text = languageTxt
 
-        loadSvgImage(binding.flagImage, country.flag)
+        country.flag?.let { url ->
+            binding.flagImage.loadUrl(url)
+        }
 
         if(country.callingCodes.isNotEmpty()) {
             binding.callingCodeRv.layoutManager = LinearLayoutManager(requireContext())

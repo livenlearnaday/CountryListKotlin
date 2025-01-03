@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.scopes.FragmentScoped
 import io.github.livenlearnaday.countrylistkotlin.data.entity.Country
 import io.github.livenlearnaday.countrylistkotlin.databinding.ItemCountryBinding
-import io.github.livenlearnaday.countrylistkotlin.utils.loadSvgImage
+import io.github.livenlearnaday.countrylistkotlin.utils.loadUrl
 import javax.inject.Inject
 
 @FragmentScoped
@@ -64,7 +64,9 @@ class CountriesAdapter @Inject constructor(
             binding.name.text = item.name
             binding.capital.text = item.capital
 
-            loadSvgImage(binding.image, country.flag)
+            country.flag?.let { url ->
+                binding.image.loadUrl(url)
+            }
 
             binding.favCheckbox.setOnCheckedChangeListener { _, b ->
                 country.favorite = b

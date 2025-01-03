@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import io.github.livenlearnaday.countrylistkotlin.data.entity.Country
 import io.github.livenlearnaday.countrylistkotlin.data.repository.CountryDataSource
 import io.github.livenlearnaday.countrylistkotlin.data.repository.CountryRepository
-import io.github.livenlearnaday.countrylistkotlin.utils.wrapEspressoIdlingResource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
@@ -24,12 +23,10 @@ class DefaultCountryRepository(
 
 
     override suspend fun getCountries(forceUpdate: Boolean): List<Country> {
-        wrapEspressoIdlingResource {
             if (forceUpdate) {
                 updateCountriesDatabase()
             }
             return countryLocalDataSource.getCountriesFromDb()
-        }
     }
 
     private suspend fun updateCountriesDatabase() {
@@ -42,9 +39,7 @@ class DefaultCountryRepository(
 
 
     override suspend fun getCountry(name: String): Country {
-        wrapEspressoIdlingResource {
             return countryLocalDataSource.getCountryFromDb(name)
-        }
     }
 
 
@@ -63,21 +58,15 @@ class DefaultCountryRepository(
 
 
     override suspend fun getFavCountries(): List<Country> {
-        wrapEspressoIdlingResource {
             return countryLocalDataSource.getFavCountries()
-        }
     }
 
     override suspend fun getSearchedCountries(name: String, capital: String): List<Country> {
-        wrapEspressoIdlingResource {
             return countryLocalDataSource.getSearchedCountries(name, capital)
-        }
     }
 
     override suspend fun clearAllFavCountries(){
-        wrapEspressoIdlingResource {
             countryLocalDataSource.clearAllFavCountries()
-        }
     }
 
 
